@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const tasksList = document.getElementById('tasks-list');
 
     // Load tasks from local storage and initialize if not present
-    const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
 
     // Function to save tasks to local storage
     function saveTasks() {
@@ -38,6 +38,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (taskText) {
             const task = { text: taskText, completed: false };
             tasks.push(task);
+            sendMessageToDiscord(`${taskText} added to the to-do list, development on this has started`)
             saveTasks();
             renderTask(task);
             inputElement.value = '';
@@ -63,9 +64,16 @@ document.addEventListener("DOMContentLoaded", function() {
             
             saveTasks(); // Save updated tasks list
         };
+        li.addEventListener('contextmenu',function(event) {
+            event.preventDefault(); // Prevent the default context menu from opening
+            tasks = tasks.filter(t => t.text !== task.text); // Remove the task from the array
+            li.remove(); // Remove the task from the UI
+            saveTasks(); // Save the updated list to local storage
+            sendMessageToDiscord(`${task.text} has been removed from the to-do list, adjustments are being made.`);
+        });
         tasksList.appendChild(li);
     }
-
+    
     // Render all tasks from local storage
     tasks.forEach(renderTask);
 });
