@@ -1,4 +1,25 @@
-// script.js
+// JavaScript code to send a message to a Discord webhook from the browser
+function sendMessageToDiscord(message) {
+    const webhookUrl = "https://discord.com/api/webhooks/1256353047861395528/Fdm6ZeDXgD2dyq-OENaiF4qYjmIxFLUhT9swKrXCh8dCCvFX0jIqCwfeo_ppStZkYuRg";
+    const data = JSON.stringify({
+        content: message
+    });
+
+    fetch(webhookUrl, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: data
+    })
+    .then(response => response.json())
+    .then(data => console.log("Success:", data))
+    .catch((error) => console.error("Error:", error));
+}
+
+// Example usage
+
+
 document.addEventListener("DOMContentLoaded", function() {
     const inputElement = document.getElementById('task-input');
     const tasksList = document.getElementById('tasks-list');
@@ -34,6 +55,12 @@ document.addEventListener("DOMContentLoaded", function() {
         li.onclick = function() {
             task.completed = !task.completed; // Toggle completion status
             li.classList.toggle('completed');
+            if (!li.classList.contains('completed')) {
+                sendMessageToDiscord(`${task.text} has been unchecked, more development is needed!`)
+            } else {
+                sendMessageToDiscord(`${task.text} has been checked off as complete, the server is closer to release!`)
+            }
+            
             saveTasks(); // Save updated tasks list
         };
         tasksList.appendChild(li);
@@ -42,3 +69,4 @@ document.addEventListener("DOMContentLoaded", function() {
     // Render all tasks from local storage
     tasks.forEach(renderTask);
 });
+
